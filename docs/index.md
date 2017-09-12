@@ -7,7 +7,9 @@
 
 ## 1.2	Hardware environment
   In the above diagram, we can see that we have three kinds of computers.
+
 ![diagram-1](diagram/1-computers.png?raw=True "diagram-1")
+
 1. *Filer getter machine* : It will connect to various LTE OMC servers, scanning the new arriving MRO files in certain directory and transfer the new arriving files to the local file machine. At present we have just 1 computer.
 2. *File parser machine* : The new arriving files will be distributed to the file parser machine. The file parser process will fetch the new arriving files , parse the xml files, transfer the file stream into object stream, pick up the required data items and transfer the object stream into the CSV format file stream .  All the required information fields will be recorded in the csv file. In our plan, we will use 7 computers to parse the files.
 3. *Database machine* : All the required information fields will future be uploaded into the database. We choose Green-plums as the database engine.  At present, we have 5 computers to run the Green-plums database instances.
@@ -15,7 +17,9 @@
 ## 1.3	The project overview
 
 ### 1.3.1	Code structure
+
 ![diagram-2](diagram/2-code_structure.png?raw=True "diagram-2")
+
   From  the above diagram, we can see that all the package in the project .now let’s have a look at it.
 1. config.py ： It is the gloal configuration file , including the database connection, the Target location, and  time difference configuration
 2. mrnicfg.csv ： The configuration information of external FTP server ( The MRO file server)
@@ -31,7 +35,9 @@
   In the year 2016, the scale of the MRO data is about 12 T, therefore we hope to find a more efficiency solution。 After extensive consultation and research， we finally decide to choose a multi-core calculation approach . We choose the python and postgres-sql as the basic tools. It took us 48 hours to process all the data in a single computer with 32 cores.  In every second ,it will process 90 thousand records. In this prototype program, we must prepare all the input files manually.  It is not proper for the everyday processing, therefore we wish to optimize the solution and we will use a real-time processing solution.
   So we hope to develop a real-time file processing system, to fetch MRO files from various external FTP server, parsing the MRO files to get the requirement information structure, ready the temporary result file, and batch upload the result file to the database.
   The global view of the project can be seen in the diagram below:
+
 ![diagram-3](diagram/3-application_context.png?raw=True "diagram-3")
+
   Form the above diagram we can see that the application context of the project. We have the following procedure:
 1.in every hour, the file getter will search in the external MRO FTP server, check the source MRO file directory and fetch the new arriving files. The file getter will ready the new arriving files in local file system.
 2.The MRO file handler will process the new arriving files one by one, transfer the file stream into the intermediate stream, get the required information structure, and finally transfer the intermediate stream into the result CSV file.
@@ -48,7 +54,9 @@ So we hope to find a good approach the design the system, that is why we setup a
 
 ### 1.3.4	Use case model
   Now let’s have look at the Use –case model. The use-case diagram can be seen below.
+
 ![diagram-4](diagram/4-use_case.png?raw=True "diagram-4")
+
   In the above use-case diagram, we have two main use-cases, get MRO File and handle MRO file. 
 1. get MRO file: the file getter will scanning all the external FTP servers to discover the new arrived MRO files and fetch them to local File directory. Since it is not complex job, a single machine can handle current file scale.
 2. handle MRO file: when new arriving file are located in local File directory,  it will be transferred into intermediate stream and required information structure will be picked up. The result will be transferred into an CSV file.  This use-case is a very complex job and processor consuming, we need 7 machines to process the current file scale.
@@ -69,7 +77,9 @@ So we hope to find a good approach the design the system, that is why we setup a
 When all the files are processed, the use case is finished. 
 
 ### 1.3.5	Domain object model
+
 ![diagram-5](diagram/5-domain_object.png?raw=True "diagram-5")
+
   Since this project is on the LTE network, let’s have a closer look at the domain object of the project.
   From the picture above，we can seen the main domain object. 
 1. E-nodeB： The E-nodeB is the basic hardware component in the 4G LTE network. A LTE network is composed of several E-nodeBs.  The E-nodeB will provide access service for all the mobile phones, allocate physical channels to the mobile phone to send or receive data from the network, and take the measurement report for each of the mobile phone which is in the connecting mode. The E-nodeB will generate MRO files every hour and transfer it to the OMC Server.
@@ -85,7 +95,9 @@ The Sample object consists of three objects, the GPSinfo, the SCinfo, and the Nc
 
 ### 1.3.6	Robust analysis 
   In the robust analysis procedure, we wish to find a reliable object model to support the use case. Theoretically, in the process of Robust analysis, we refined the domain object model without consideration of the implementation environment, including the programming language, the operation system and the middle ware.  we can understand the system better via the analysis model.
+
 ![diagram-6](diagram/6-analysis_object.png?raw=True "diagram-6")
+
 From the above diagram, we can see that ,we have three type of object.
 1、interface object. Here we have one interface object, the filegetter. it will visit the external OMC_FTP_server to get the new arriving MRO_files.
 2、Control object. The control will handle complex logic. Here we have the filesender , and the file handler.
@@ -97,6 +109,7 @@ From the above diagram, we can see that ,we have three type of object.
 
 ### 1.3.7	Design model
   Now let’s have a look at the Design model of the final object.
+
 ![diagram-7](diagram/7-the_component_model.png?raw=True "diagram-7")
 
 #### 1.3.7.1	Config.py 
@@ -112,7 +125,9 @@ In the object, we have 4 parameters, let’s have a look at it.
 #### 1.3.7.3	filegetter_mr.py
   since this component is not very complex, we just represent the component diagram here. It will fetch the MRO files from external OMC_FTP_server, and put them in the local file system as the parameter MRO_PATH defined. 
   See the component diagram below:
+
 ![diagram-8](diagram/8-the_filgetter_model.png?raw=True "diagram-8")
+
   Form the above diagram，we can see the main object model of the component：
   entity object： There are 3 entity object , which are the omcinfo，mrnicfg.csv and the MRO_file. The domain object omcinfo record the information structure of the FTP server. The object omcinfo exists in the memory. The object mrnicfg.csv contains the same information structure of the object of omcinfo, yet it is in the format of file system. And the object MRO_file  represents the files collected from the FTP_servers. 
   Boundary object：In the project of the FTP getter component, there are 4 boundary objects, including the multi-pool，getMROnicfg，ftpDL，ftpPush. Let’s have a look at the function of the object. 
@@ -131,11 +146,15 @@ https://www.smartftp.com/static/Products/SmartFTP/RFC/x-dupe-info.txt
 
 
 #### 1.3.7.5	 Filesender
+
 ![diagram-9](diagram/9-the_object_view_of_file_senderl.png?raw=True "diagram-9")
+
 First we have a look at the control object. 
 1、filesender:it will look up the new arriving xml files , identify the vender of the XML files ( There five venders in my province,  we choose different approaches to handle the MRO files from different vender.) 
 2、handleFile： if the MRO files is two-layer compressed file format, we will choose the component handleFile to process the file. The logic to handle the two-layer compressed file is relative complex.
+
 ![diagram-10](diagram/10-the_two_lay_zip_file.png?raw=True "diagram-10")
+
 3、handle singlefile： if the MRO files is one-layer compressed file format, we will choose the component handle singlefile to process the file. The logic to handle the one-layer compressed file is relative simple 
 We have three interface object:
 1、FilelistRecord(path): it will scan the local file system of the existing MRO files, and copy the list of existing MRO files to a temp table in the database.
@@ -143,16 +162,22 @@ We have three interface object:
 3、getnbcfgdict: it will visit the database to get the vender associated information.  And the information structure will be copied to the object nbccfg.
 The we have three  entity objects.
 1、nbccfg： the object nbccfg will contain information structure of the LTE OMC FTP server, with the information structure the object Filesender will identity the vender of the MRR xml file, and the id of various omc-server which will future be used as the file segment identity in the local file system.
+
 ![diagram-11](diagram/11-nbcfg.png?raw=True "diagram-11")
+
 2, RS: the object RS will contain the information structure of the new arrived files. 
 3、file_list: it will record the new arrived MRO_files. It is consist of a temp-table and a table in the database.
+
 ![diagram-12](diagram/12-rs.png?raw=True "diagram-12")
+
 With the information, we can identify the file directory of the new arrived file, the file name of the new arrived file, the nid of the new arrived file( the nid represent the source OMC-server which prepares the MRO files)
 The above nine objects are the main components to handle the new arrived files. In summary the object fileSender works as the coordinator to schedule the new arrived MRO files, the object handleFile and handleSingleFile will work as the worker to process the new arrived MRO files according to the vender of the MRO files.
 
 #### 1.3.7.6	handleFile
   if the MRO files is two-layer compressed file format, we will choose the component handleFile to process the file. The logic to handle the two-layer compressed file is relative complex. Let’s have a look at the component view of the handleFile.
+
 ![diagram-13](diagram/13-handle_file.png?raw=True "diagram-13")
+
 In the above diagram , we will see the main procedure of the XML processing task.
 1、 The object handleZipfile(filename ,nid) will first identify the file directory of the MRO files acoording to the input argument . 
 2、the object handleZipfile(filename ,nid) will fetch target file and transfer the file stream into the object stream via the function ZIPfile(), we have the object myzip which is the object stream in the memory. In general, the object myzip is in the size of 1 G Byte. 
@@ -162,11 +187,15 @@ In the above diagram , we will see the main procedure of the XML processing task
 
 #### 1.3.7.7	Handlesinglefile()
 if the MRO files is just one-layer compressed file format, we will choose the component handlesingleFile to process the file. The logic to handle the one-layer compressed file is relative simple. Let’s have a look at the component view of the handleFile.
+
 ![diagram-14](diagram/14-handlesinglefile.png?raw=True "diagram-14")
+
 In this case , the logic is relative simple, we just call a object  handleMrofile（）to parse the file, which is a component form previous project.
 
 #### 1.3.7.8	 Object reuse via the comositon mechanism
+
 ![diagram-15](diagram/15-code_reuse.png?raw=True "diagram-15")
+
 Since we have various vender files to handle, we must design a flexible object structure with less code. So we reuse some code via the composition mechanism.  The  object relation can be seen in the above diagram
 1、 the object Handlesubzip(myzip,subname,nid) is consist of the handlemrofile(fobj,nid) .  the object handleSinglefile is also consist of the object handlemrofile(fobj,nid).
 2、 the object handlemrofile(fobj,nid) is consist of the object MRO handler(fobj,nid)
@@ -174,7 +203,9 @@ Since we have various vender files to handle, we must design a flexible object s
 
 #### 1.3.7.9	Mrofilehandler
 The object  MRofilehandler  will parser the xml format  XMR file and ready the result files.
+
 ![diagram-16](diagram/16-MROhandler.png?raw=True "diagram-16")
+
 in the above example, we will describe the processing sequence.
 1、first the object MRoparser5 will parse the intermediate stream fobj, pick up the required information field and creat a new object M, that is the key object in the application.
 2、 second， the object MROcounter will process the object m and creat a new object C. 
