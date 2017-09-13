@@ -9,4 +9,4 @@
 8. mroCounter.py ： MRO解析后特殊样本统计组件
 
 # docs
-[disign docments](https://github.com/zengqingbo/mroget/docs/index.md)
+[disign docments](https://github.com/zengqingbo/mroget/blob/master/docs/index.md)
