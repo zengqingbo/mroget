@@ -2,7 +2,7 @@ version: "3"
 services:
   mro1:
     # replace username/repo:tag with your name and image details
-    image: 10.25.226.2:5000/mro
+    image: 10.XXX.XXX.2:5000/mro
     volumes:
       - "/gpdir/mro:/gpdir/mro"
     deploy:
@@ -19,7 +19,7 @@ services:
 
   mro2:
     # replace username/repo:tag with your name and image details
-    image: 10.25.226.2:5000/mro
+    image: 10.XXX.XXX.2:5000/mro
     volumes:
       - "/gpdir/mro:/gpdir/mro"
     deploy:
@@ -36,7 +36,7 @@ services:
 
   mro3:
     # replace username/repo:tag with your name and image details
-    image: 10.25.226.2:5000/mro
+    image: 10.XXX.XXX.2:5000/mro
     volumes:
       - "/gpdir/mro:/gpdir/mro"
     deploy:
@@ -53,7 +53,7 @@ services:
 
   mro4:
     # replace username/repo:tag with your name and image details
-    image: 10.25.226.2:5000/mro
+    image: 10.XXX.XXX.2:5000/mro
     volumes:
       - "/gpdir/mro:/gpdir/mro"
     deploy:
@@ -70,7 +70,7 @@ services:
 
   mro5:
     # replace username/repo:tag with your name and image details
-    image: 10.25.226.2:5000/mro
+    image: 10.XXX.XXX.2:5000/mro
     volumes:
       - "/gpdir/mro:/gpdir/mro"
     deploy:
@@ -87,7 +87,7 @@ services:
 
   mro6:
     # replace username/repo:tag with your name and image details
-    image: 10.25.226.2:5000/mro
+    image: 10.XXX.XXX.2:5000/mro
     volumes:
       - "/gpdir/mro:/gpdir/mro"
     deploy:
@@ -104,7 +104,7 @@ services:
 
   mro7:
     # replace username/repo:tag with your name and image details
-    image: 10.25.226.2:5000/mro
+    image: 10.XXX.XXX.2:5000/mro
     volumes:
       - "/gpdir/mro:/gpdir/mro"
     deploy:
@@ -121,7 +121,7 @@ services:
 
   flower:
     # replace username/repo:tag with your name and image details
-    image: 10.25.226.2:5000/mro
+    image: 10.XXX.XXX.2:5000/mro
     ports: 
       - "5555:5555"
     volumes:
@@ -139,7 +139,7 @@ services:
       - webnet
 
   rabbit:
-    image: 10.25.226.2:5000/rabbitmq:3-management
+    image: 10.XXX.XXX.2:5000/rabbitmq:3-management
     hostname: rabbit
     ports:
       - "15672:15672"
@@ -156,7 +156,7 @@ services:
       - webnet
 
   visualizer:
-    image: 10.25.226.2:5000/visualizer:stable
+    image: 10.XXX.XXX.2:5000/visualizer:stable
     ports:
       - "8080:8080"
     volumes:
