@@ -16,7 +16,7 @@ DEBUG_LEVEL = 0
 CSV_DIR = './csv/'
 ZIP_DIR = './zip/'
 
-PG_CONN_TEXT = 'host=10.25.226.2 dbname=qc user=postgres password=r00t'
+PG_CONN_TEXT = 'host=10.XXX.XXX.2 dbname=qc user=postgres password=r00t'
 
 
 def getZipobj(filename):
