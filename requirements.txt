@@ -1,0 +1,5 @@
+celery
+flower
+psycopg2
+sqlalchemy
+psutil

@@ -1,0 +1,170 @@
+version: "3"
+services:
+  mro1:
+    # replace username/repo:tag with your name and image details
+    image: 10.25.226.2:5000/mro
+    volumes:
+      - "/gpdir/mro:/gpdir/mro"
+    deploy:
+      #  deploy container nums
+      replicas: 1
+      placement:
+        constraints: [node.hostname == hbwy0001]
+      restart_policy:
+        condition: on-failure
+    depends_on:
+      - rabbit
+    networks:
+      - webnet
+
+  mro2:
+    # replace username/repo:tag with your name and image details
+    image: 10.25.226.2:5000/mro
+    volumes:
+      - "/gpdir/mro:/gpdir/mro"
+    deploy:
+      #  deploy container nums
+      replicas: 2
+      placement:
+        constraints: [node.hostname == hbwy0002]
+      restart_policy:
+        condition: on-failure
+    depends_on:
+      - rabbit
+    networks:
+      - webnet
+
+  mro3:
+    # replace username/repo:tag with your name and image details
+    image: 10.25.226.2:5000/mro
+    volumes:
+      - "/gpdir/mro:/gpdir/mro"
+    deploy:
+      #  deploy container nums
+      replicas: 2
+      placement:
+        constraints: [node.hostname == hbwy0003]
+      restart_policy:
+        condition: on-failure
+    depends_on:
+      - rabbit
+    networks:
+      - webnet
+
+  mro4:
+    # replace username/repo:tag with your name and image details
+    image: 10.25.226.2:5000/mro
+    volumes:
+      - "/gpdir/mro:/gpdir/mro"
+    deploy:
+      #  deploy container nums
+      replicas: 2
+      placement:
+        constraints: [node.hostname == hbwy0004]
+      restart_policy:
+        condition: on-failure
+    depends_on:
+      - rabbit
+    networks:
+      - webnet
+
+  mro5:
+    # replace username/repo:tag with your name and image details
+    image: 10.25.226.2:5000/mro
+    volumes:
+      - "/gpdir/mro:/gpdir/mro"
+    deploy:
+      #  deploy container nums
+      replicas: 2
+      placement:
+        constraints: [node.hostname == hbwy0005]
+      restart_policy:
+        condition: on-failure
+    depends_on:
+      - rabbit
+    networks:
+      - webnet
+
+  mro6:
+    # replace username/repo:tag with your name and image details
+    image: 10.25.226.2:5000/mro
+    volumes:
+      - "/gpdir/mro:/gpdir/mro"
+    deploy:
+      #  deploy container nums
+      replicas: 2
+      placement:
+        constraints: [node.hostname == hbwy0006]
+      restart_policy:
+        condition: on-failure
+    depends_on:
+      - rabbit
+    networks:
+      - webnet
+
+  mro7:
+    # replace username/repo:tag with your name and image details
+    image: 10.25.226.2:5000/mro
+    volumes:
+      - "/gpdir/mro:/gpdir/mro"
+    deploy:
+      #  deploy container nums
+      replicas: 2
+      placement:
+        constraints: [node.hostname == hbwy0007]
+      restart_policy:
+        condition: on-failure
+    depends_on:
+      - rabbit
+    networks:
+      - webnet
+
+  flower:
+    # replace username/repo:tag with your name and image details
+    image: 10.25.226.2:5000/mro
+    ports: 
+      - "5555:5555"
+    volumes:
+      - "/gpdir/mro:/gpdir/mro"
+    entrypoint: flower -A tasks
+    deploy:
+      #  deploy container nums
+      restart_policy:
+        condition: on-failure
+      placement:
+        constraints: [node.role == manager]
+    depends_on:
+      - rabbit
+    networks:
+      - webnet
+
+  rabbit:
+    image: 10.25.226.2:5000/rabbitmq:3-management
+    hostname: rabbit
+    ports:
+      - "15672:15672"
+      - "5672:5672"
+    environment:
+      - RABBITMQ_DEFAULT_USER=guest
+      - RABBITMQ_DEFAULT_PASS=guest
+    deploy:
+      placement:
+        constraints: [node.role == manager]
+      restart_policy:
+        condition: on-failure
+    networks:
+      - webnet
+
+  visualizer:
+    image: 10.25.226.2:5000/visualizer:stable
+    ports:
+      - "8080:8080"
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock"
+    deploy:
+      placement:
+        constraints: [node.role == manager]
+    networks:
+      - webnet
+networks:
+  webnet:

@@ -1,15 +1,15 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 import xml.etree.cElementTree as ET
-import psycopg2
 import sys
 import os
 import random
 import gzip
-import czipfile as zipfile
+import zipfile as zipfile
 from time import time
 from multiprocessing import Pool
 from math import *
+from mroCounter import mroCounter
 
 _NcField = ['LteNcRSRP',
 			'LteNcRSRQ',
@@ -72,7 +72,7 @@ class mro():
 		scInfoCheck = False
 		smrId = 0
 		self.samples = {}
-		f = fobj.fobj
+		f = fobj
 		for event , elem in ET.iterparse(f):
 			if event == 'end':
 				if elem.tag == 'fileHeader' :
@@ -116,14 +116,14 @@ class mro():
 				if smrId==2 and elem.tag == 'v'	:
 					v_value = elem.text.strip().split(' ')
 					ScInfo = {}
-					for k,v in smr.iteritems():
+					for k,v in smr.items():
 						ScInfo[k] = v_value[v]
 				if smrId==2 and elem.tag == 'object':
 					MmeUeS1apId = elem.attrib['MmeUeS1apId']
 					TimeStamp = elem.attrib['TimeStamp'].replace('T',' ')
 					id = elem.attrib['id']
 					key = self._genKey(MmeUeS1apId,TimeStamp,id)
-					if self.samples.has_key(key) : self.samples[key].ScInfo.update(ScInfo)
+					if key in self.samples : self.samples[key].ScInfo.update(ScInfo)
 				#print elem.tag,elem.text
 				elem.clear()
 		f.close()
@@ -135,8 +135,8 @@ class mro():
 		maxGsmRssi = -1
 		GsmNcellCarrierRSSI = 'NIL'
 		for nc in NcInfo_list:
-			if nc.has_key('GsmNcellCarrierRSSI') : GsmNcellCarrierRSSI = nc['GsmNcellCarrierRSSI']
-			if GsmNcellCarrierRSSI <>  'NIL' and int(GsmNcellCarrierRSSI) > maxGsmRssi:
+			if 'GsmNcellCarrierRSSI' in nc  : GsmNcellCarrierRSSI = nc['GsmNcellCarrierRSSI']
+			if GsmNcellCarrierRSSI !=  'NIL' and int(GsmNcellCarrierRSSI) > maxGsmRssi:
 				maxGsmRssi = int(GsmNcellCarrierRSSI)
 		if maxGsmRssi == -1 :
 			maxGsmRssi = 'NIL'
@@ -157,7 +157,7 @@ class mro():
 			return z.open(z.namelist()[0])
 		elif ext == '.xml':
 			return open(filename,'r')
-		print 'unzip error:',filename 
+		print('unzip error:',filename )
 
 	def taAoaLocation(self,x,y,z,g):
 		self.x,self.y,self.z = x,y,z
@@ -179,7 +179,7 @@ class mro():
 			jiaodu=0
 		else:
 			jiaodu=g[str(Ci)]
-		if x<>None and LteScTadv <> 'NIL' and LteScAOA <> 'NIL':
+		if x!=None and LteScTadv != 'NIL' and LteScAOA != 'NIL':
 			loc_x = x+c_ta*(int(LteScTadv)+ random.uniform(-0.5,0.5))*sin(radians(int(LteScAOA)/2+jiaodu+random.uniform(-0.25,0.25)))
 			loc_y = y+c_ta*(int(LteScTadv)+ random.uniform(-0.5,0.5))*cos(radians(int(LteScAOA)/2+jiaodu+random.uniform(-0.25,0.25)))
 		return loc_x, loc_y
@@ -195,42 +195,49 @@ class mro():
 
 	def toCsvScInfo(self,dir = ''):
 		if dir == '' : 
-			filename = self.filename + '.scinfo.csv'
+			filename = self.filename + '.scinfo'
 		else :
-			filename = os.path.join(dir,os.path.basename(self.filename)+ '.scinfo.csv')
+			filename = os.path.join(dir,os.path.basename(self.filename)+ '.scinfo')
 		with open(filename,'w') as f:
-			for k ,v in self.samples.iteritems():
+			for k ,v in self.samples.items():
 				line = "%s,%s,%s,%s,%s," % (v.TimeStamp,v.MmeUeS1apId,self.EnodebId, v.id,v.maxGsmRssi)
 				line = line + ','.join([v.ScInfo[mri] \
-					if v.ScInfo.has_key(mri) else 'NIL' for mri in _ScInfo_Format])
+					if mri in v.ScInfo else 'NIL' for mri in _ScInfo_Format])
+				line = line + ',' + self.startTime[:self.startTime.find('T')]
 				f.write(line+'\n')
+		if os.path.isfile(filename):
+			os.rename(filename,filename+'.csv')
+			filename=filename+'.csv'
 		return filename
 
 	def toCsvNcInfo(self,dir = ''):
 		if dir == '' : 
-			filename = self.filename + '.ncinfo.csv'
+			filename = self.filename + '.ncinfo'
 		else :
-			filename = os.path.join(dir,os.path.basename(self.filename)+ '.ncinfo.csv')
+			filename = os.path.join(dir,os.path.basename(self.filename)+ '.ncinfo')
 		with open(filename,'w') as f:
-			for k ,v in self.samples.iteritems():
+			for k ,v in self.samples.items():
 				for NcInfo in v.NcInfo_list:
 					line = "%s,%s,%s,%s," % (v.TimeStamp,v.MmeUeS1apId,self.EnodebId,v.id)
 					line = line + ','.join([NcInfo[mri] \
-						if NcInfo.has_key(mri) else 'NIL' for mri in _NcInfo_Format])
+						if mri in NcInfo else 'NIL' for mri in _NcInfo_Format])
+					line = line + ',' + self.startTime[:self.startTime.find('T')]
 					f.write(line+'\n')
+		if os.path.isfile(filename):
+			os.rename(filename,filename+'.csv')
+			filename=filename+'.csv'
 		return filename
 
 
 if __name__ == '__main__' :
-	m = mro('c:\\TD-LTE_MRO_HUAWEI_010030226002_642749_20160619000000.xml')
-	print len(m.samples)
-	for k,v in  m.samples.iteritems():
-		print k , v.ScInfo['LteScRSRP'], v.ScInfo['LteScPlrULQci9']
-		break
-	m.taAoaLocation(12712420,3580029,85,{'1':60,'2':180,'3':300})
-	m.genGridXY(127120000,3580000)
-	m.toCsvScInfo()
-	m.toCsvNcInfo()
-
+	filename = './zip/TD-LTE_MRO_HUAWEI_010031151066_304870_20170908080000.xml'
+	fobj = open(filename)
+	setattr(fobj,'filename',filename)
+	print(fobj.filename)
+	m = mro(fobj)
+	print(len(m.samples))
+	fobj.close()
+	c = mroCounter(m)
+	c.to_csv_cmpcounter('./csv')
 	#siteParser(['e:\\0818\\TD-LTE_MRO_HUAWEI_010031151066_435545_20160518060000.xml'])
  
