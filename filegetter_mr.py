@@ -11,7 +11,7 @@ from datetime import date, datetime, timedelta
 from tasks import handleBigZipfile
 import psycopg2
 
-PG_CONN_TEXT = 'host=10.25.226.2 dbname=qc user=postgres password=r00t'
+PG_CONN_TEXT = 'host=10.XXX.XXX.2 dbname=qc user=postgres password=r00t'
 
 debuglevel = 0
 CUR_DIR = os.path.split(os.path.realpath(__file__))[0]
