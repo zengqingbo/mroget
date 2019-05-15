@@ -8,7 +8,7 @@ from kombu import Queue
 import os,psycopg2
 from datetime import datetime
 
-PG_CONN_TEXT = 'host=10.XXX.XXX.2 dbname=qc user=postgres password=r00t'
+PG_CONN_TEXT = 'host=10.XXX.XXX.2 dbname=XXXX user=XXXX password=XXXX'
 
 app = Celery('tasks',
              broker='pyamqp://guest:guest@10.XXX.XXX.2',
