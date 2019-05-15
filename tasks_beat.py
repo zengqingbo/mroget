@@ -5,8 +5,8 @@ from filegetter_mr import mrgetter_main
 
 
 app = Celery('tasks',
-             broker='pyamqp://guest:guest@10.XXX.XXX.2',
-             backend='db+postgresql://gpadmin:boco1234!@10.XXX.XXX.7/qc')
+             broker='pyamqp://XXXX:XXXX@10.XXX.XXX.2',
+             backend='db+postgresql://XXXX:XXXX@10.XXX.XXX.7/qc')
 
 # Optional configuration, see the application user guide.
 app.conf.update(
