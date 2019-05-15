@@ -11,8 +11,8 @@ from datetime import datetime
 PG_CONN_TEXT = 'host=10.XXX.XXX.2 dbname=XXXX user=XXXX password=XXXX'
 
 app = Celery('tasks',
-             broker='pyamqp://guest:guest@10.XXX.XXX.2',
-             backend='db+postgresql://gpadmin:boco1234!@10.XXX.XXX.7/qc')
+             broker='pyamqp://XXXX:XXXX@10.XXX.XXX.2',
+             backend='db+postgresql://XXXX:XXXX!@10.XXX.XXX.7/qc')
 
 # Optional configuration, see the application user guide.
 app.conf.update(
